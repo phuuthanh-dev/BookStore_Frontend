@@ -2,20 +2,29 @@ import React from "react";
 import { Book } from "../models/Book";
 import { MyRequest } from "./Request";
 
-export async function getBooks(): Promise<Book[]> {
-    const result: Book[] = [];
+interface ResultInteface {
+    booksData: Book[];
+    totalPages: number;
+    numberBooksPerPage: number;
+    totalBooks: number
+}
 
-    // endpoint
-    const URL: string = "http://localhost:8080/books";
+async function getData(URL: string): Promise<ResultInteface> {
+    const books: Book[] = [];
 
     // request
     const response = await MyRequest(URL);
 
-    // get json response
+    // get json book
     const responseData = response._embedded.books;
 
+    // get json page
+    const totalPages = response.page.totalPages;
+    const numberBooksPerPage = response.page.size;
+    const totalBooks = response.page.totalElements;
+
     for (const key in responseData) {
-        result.push({
+        books.push({
             id: responseData[key].id,
             title: responseData[key].name,
             author: responseData[key].author,
@@ -27,5 +36,27 @@ export async function getBooks(): Promise<Book[]> {
         })
     }
 
-    return result;
+    return { 
+        booksData: books, 
+        totalPages: totalPages, 
+        numberBooksPerPage: numberBooksPerPage, 
+        totalBooks: totalBooks 
+    };
+}
+
+export async function getBooks(currentPage: number): Promise<ResultInteface> {
+
+    // endpoint
+    const URL: string = `http://localhost:8080/books?size=1&page=${currentPage}`;
+
+    return getData(URL);
+}
+
+export async function get3NewBook(): Promise<ResultInteface> {
+    const result: Book[] = [];
+
+    // endpoint
+    const URL: string = "http://localhost:8080/books";
+
+    return getData(URL);
 }

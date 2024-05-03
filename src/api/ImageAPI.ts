@@ -1,11 +1,8 @@
 import { Image } from "../models/Image";
 import { MyRequest } from "./Request";
 
-export async function getImagesByBookId(id: number): Promise<Image[]> {
+async function getImages(URL: string): Promise<Image[]> {
     const result: Image[] = [];
-
-    // endpoint
-    const URL: string = `http://localhost:8080/books/${id}/images`;
 
     // request
     const response = await MyRequest(URL);
@@ -24,4 +21,26 @@ export async function getImagesByBookId(id: number): Promise<Image[]> {
     }
 
     return result;
+}
+
+export async function getImagesByBookId(id: number): Promise<Image[]> {
+
+    // endpoint
+    const URL: string = `http://localhost:8080/books/${id}/images`;
+
+    return getImages(URL);
+}
+
+export async function getIconImageByBoodId(id: number): Promise<Image | undefined> {
+    // endpoint
+    const URL: string = `http://localhost:8080/books/${id}/images`;
+    const images: Image[] = await getImages(URL);
+
+    for (const image of images) {
+        // tìm icon
+        if (image.icon === true) {
+            return image;
+        }
+    }
+    return undefined;
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Book } from "../../../models/Book";
-import { getImagesByBookId } from "../../../api/ImageAPI";
+import { getIconImageByBoodId } from "../../../api/ImageAPI";
 import { Image } from "../../../models/Image";
 
 interface BookProps {
@@ -9,14 +9,14 @@ interface BookProps {
 
 const BookProps: React.FC<BookProps> = (props) => {
   const bookId: number = props.book.id;
-  const [images, setImages] = useState<Image[]>([]);
+  const [iconImage, setIconImage] = useState<Image>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    getImagesByBookId(bookId)
+    getIconImageByBoodId(bookId)
       .then((imagesData) => {
-        setImages(imagesData);
+        setIconImage(imagesData);
         setLoading(false);
       })
       .catch((error) => {
@@ -53,23 +53,11 @@ const BookProps: React.FC<BookProps> = (props) => {
     );
   }
 
-  let primaryImg: string = "";
-  // có ảnh và có data ảnh
-  if (images.length > 0 && images[0].data) {
-    for (const image of images) {
-      // tìm icon
-      if (image.icon === true) {
-        primaryImg = image.data;
-        break;
-      }
-    }
-  }
-
   return (
     <div className="col-md-3 mt-2">
       <div className="card">
         <img
-          src={primaryImg}
+          src={iconImage?.data}
           className="card-img-top"
           alt={props.book.title}
           style={{ marginTop: "12px", height: "300px" }}
