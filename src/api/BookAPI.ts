@@ -47,16 +47,18 @@ async function getData(URL: string): Promise<ResultInteface> {
 export async function getBooks(currentPage: number): Promise<ResultInteface> {
 
     // endpoint
-    const URL: string = `http://localhost:8080/books?size=1&page=${currentPage}`;
+    const URL: string = `http://localhost:8080/books?size=3&page=${currentPage}`;
 
     return getData(URL);
 }
 
-export async function get3NewBook(): Promise<ResultInteface> {
-    const result: Book[] = [];
+export async function findBooksByName(currentPage: number, name: string): Promise<ResultInteface> {
 
     // endpoint
-    const URL: string = "http://localhost:8080/books";
-
+    let URL: string = `http://localhost:8080/books?size=3&page=${currentPage}`;
+    if (name !== "") {
+        // URL = `http://localhost:8080/books?size=3&page=0&name=${name}`;
+        URL = `http://localhost:8080/books/search/findByNameContaining?size=3&page=${currentPage}&name=${name}`;
+    }
     return getData(URL);
 }

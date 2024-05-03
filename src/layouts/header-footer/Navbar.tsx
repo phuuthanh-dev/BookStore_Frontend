@@ -1,6 +1,14 @@
-import React from "react";
-
-function Navbar() {
+import React, { ChangeEvent } from "react";
+import { text } from "stream/consumers";
+interface NavbarProps {
+  textSearch: string;
+  setTextSearch: (text: string) => void;
+}
+function Navbar({ textSearch, setTextSearch }: NavbarProps) {
+  const searchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.value);
+    setTextSearch(e.target.value);
+  };
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container-fluid">
@@ -63,30 +71,32 @@ function Navbar() {
               </a>
             </li>
           </ul>
-          <form className="d-flex" role="search">
+          <div className="d-flex" role="search">
             <input
               className="form-control me-2"
               type="search"
               placeholder="Search"
               aria-label="Search"
+              onInput={searchInputChange}
+              value={textSearch}
             />
             <button className="btn btn-outline-success" type="submit">
               Search
             </button>
-          </form>
+          </div>
           <ul className="navbar-nav me-1">
             <li className="nav-item">
-                <a className="nav-link" href="#">
-                    <i className="fas fa-shopping-cart"></i>
-                </a>
+              <a className="nav-link" href="#">
+                <i className="fas fa-shopping-cart"></i>
+              </a>
             </li>
           </ul>
 
           <ul className="navbar-nav me-1">
             <li className="nav-item">
-                <a className="nav-link" href="#">
-                    <i className="fas fa-user"></i>
-                </a>
+              <a className="nav-link" href="#">
+                <i className="fas fa-user"></i>
+              </a>
             </li>
           </ul>
         </div>

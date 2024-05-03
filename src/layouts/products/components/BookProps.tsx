@@ -88,7 +88,7 @@ const BookProps: React.FC<BookProps> = (props) => {
               <del>{props.book.originPrice}</del>
             </span>
             <span className="discounted-price">
-              <strong>{props.book.price}</strong>
+              <strong style={{ color: "red" }}>{props.book.price} đ</strong>
             </span>
           </div>
           <div className="row mt—2" role="group">
