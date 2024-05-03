@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Book } from "../../../models/Book";
 import { getIconImageByBoodId } from "../../../api/ImageAPI";
 import { Image } from "../../../models/Image";
+import { Link } from "react-router-dom";
+import BookList from "../BookList";
 
 interface BookProps {
   book: Book;
 }
 
-const BookProps: React.FC<BookProps> = (props) => {
+const BookItem: React.FC<BookProps> = (props) => {
   const bookId: number = props.book.id;
   const [iconImage, setIconImage] = useState<Image>();
   const [loading, setLoading] = useState(true);
@@ -56,40 +58,40 @@ const BookProps: React.FC<BookProps> = (props) => {
   return (
     <div className="col-md-3 mt-2">
       <div className="card">
-        <img
-          src={iconImage?.data}
-          className="card-img-top"
-          alt={props.book.title}
-          style={{ marginTop: "12px", height: "300px" }}
-        />
+        <Link to={`/view-detail/book/${props.book.id}`}>
+          <img
+            src={iconImage?.data}
+            className="card-img-top"
+            alt={props.book.title}
+            style={{ marginTop: "12px", height: "300px" }}
+          />
+        </Link>
         <div className="card-body">
-          <h5
-            className="card—title"
+          <Link
+            to={`/view-detail/book/${props.book.id}`}
             style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
+              textDecoration: "none", color: "black"
             }}
           >
-            {props.book.title}
-          </h5>
-          <p
-            className="card-text"
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {props.book.description}
-          </p>
-          <div className="price">
-            <span className="original~price">
-              <del>{props.book.originPrice}</del>
-            </span>
-            <span className="discounted-price">
+            <h6
+              className="card—title"
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                textAlign: 'start'
+              }}
+            >
+              {props.book.title}
+            </h6>
+          </Link>
+          <div className="price d-flex align-items-start flex-column">
+            <h6 className="discounted-price">
               <strong style={{ color: "red" }}>{props.book.price} đ</strong>
-            </span>
+            </h6>
+            <div className="original-price">
+              <del>{props.book.originPrice} đ</del>
+            </div>
           </div>
           <div className="row mt—2" role="group">
             <div className="col-6">
@@ -109,4 +111,4 @@ const BookProps: React.FC<BookProps> = (props) => {
   );
 };
 
-export default BookProps;
+export default BookItem;

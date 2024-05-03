@@ -1,20 +1,79 @@
-import React, { ChangeEvent } from "react";
-import { text } from "stream/consumers";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { Category } from "../../models/Category";
+import { getCategories } from "../../api/CategoryAPI";
+import CategoryItem from "../products/components/CategoryItem";
+import { useNavigate } from 'react-router-dom';
+
 interface NavbarProps {
   textSearch: string;
   setTextSearch: (text: string) => void;
 }
+
 function Navbar({ textSearch, setTextSearch }: NavbarProps) {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const searchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
     setTextSearch(e.target.value);
   };
+
+  // Enter after input search
+  const navigate = useNavigate();
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      navigate("/");
+    }
+  };
+
+  useEffect(() => {
+    getCategories()
+      .then((categoriesData) => {
+        setCategories(categoriesData);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        setError(error.message);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="container">
+        <div className="row mt-4">
+          <div className="col-12">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container">
+        <div className="row mt-4">
+          <div className="col-12">
+            <div className="alert alert-danger" role="alert">
+              {error}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container-fluid">
-        <a className="navbar-brand" href="index.html">
+        <NavLink className="navbar-brand" to="/">
           Bookstore
-        </a>
+        </NavLink>
         <button
           className="navbar-toggler"
           type="button"
@@ -29,46 +88,36 @@ function Navbar({ textSearch, setTextSearch }: NavbarProps) {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <a
-                className="nav-link active"
-                aria-current="page"
-                href="index.html"
-              >
+              <NavLink className="nav-link active" aria-current="page" to="/">
                 Home
-              </a>
+              </NavLink>
             </li>
             <li className="nav-item dropdown">
-              <a
+              <NavLink
                 className="nav-link dropdown-toggle"
-                href="index.html"
+                to="index.html"
                 role="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
                 Categories
-              </a>
+              </NavLink>
               <ul className="dropdown-menu">
-                <li>
-                  <a className="dropdown-item" href="index.html">
-                    Action
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="index.html">
-                    Another action
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="index.html">
-                    Something else here
-                  </a>
-                </li>
+                {categories.map((category) => (
+                  <CategoryItem category={category} key={category.id}/>
+                ))}
               </ul>
             </li>
+
             <li className="nav-item">
-              <a className="nav-link" href="index.html">
+              <NavLink className="nav-link" to="/contact">
                 Contact
-              </a>
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink className="nav-link" to="/about">
+                About
+              </NavLink>
             </li>
           </ul>
           <div className="d-flex" role="search">
@@ -79,6 +128,7 @@ function Navbar({ textSearch, setTextSearch }: NavbarProps) {
               aria-label="Search"
               onInput={searchInputChange}
               value={textSearch}
+              onKeyPress={handleKeyPress}
             />
             <button className="btn btn-outline-success" type="submit">
               Search
@@ -86,17 +136,17 @@ function Navbar({ textSearch, setTextSearch }: NavbarProps) {
           </div>
           <ul className="navbar-nav me-1">
             <li className="nav-item">
-              <a className="nav-link" href="#">
+              <NavLink className="nav-link" to="/cart">
                 <i className="fas fa-shopping-cart"></i>
-              </a>
+              </NavLink>
             </li>
           </ul>
 
           <ul className="navbar-nav me-1">
             <li className="nav-item">
-              <a className="nav-link" href="#">
+              <NavLink className="nav-link" to="/user">
                 <i className="fas fa-user"></i>
-              </a>
+              </NavLink>
             </li>
           </ul>
         </div>

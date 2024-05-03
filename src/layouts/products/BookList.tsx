@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Book } from "../../models/Book";
-import BookProps from "./components/BookProps";
-import { findBooksByName, getBooks } from "../../api/BookAPI";
+import BookProps from "./components/BookItem";
+import { findBooks, getBooks } from "../../api/BookAPI";
 import { Pagination } from "../utils/Pagination";
 import { text } from "stream/consumers";
 
 interface BookListProps {
   textSearch: string;
+  categoryId: number;
 }
 
-const BookList: React.FC<BookListProps> = ({ textSearch }) => {
+const BookList: React.FC<BookListProps> = ({ textSearch, categoryId }) => {
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,7 +19,36 @@ const BookList: React.FC<BookListProps> = ({ textSearch }) => {
   const [totalBooks, setTotalBooks] = useState(0);
 
   useEffect(() => {
-    if (textSearch === "") {
+    setCurrentPage(1);
+    if (textSearch === "" && categoryId === 0) {
+      getBooks(0)
+        .then((response) => {
+          setBooks(response.booksData);
+          setLoading(false);
+          setTotalPages(response.totalPages);
+          setTotalBooks(response.totalBooks);
+        })
+        .catch((error) => {
+          setLoading(false);
+          setError(error.message);
+        });
+    } else {
+      findBooks(0, textSearch, categoryId)
+        .then((response) => {
+          setBooks(response.booksData);
+          setLoading(false);
+          setTotalPages(response.totalPages);
+          setTotalBooks(response.totalBooks);
+        })
+        .catch((error) => {
+          setLoading(false);
+          setError(error.message);
+        });
+    }
+  }, [textSearch]);
+
+  useEffect(() => {
+    if (textSearch === "" && categoryId === 0) {
       getBooks(currentPage - 1)
         .then((response) => {
           setBooks(response.booksData);
@@ -31,8 +61,7 @@ const BookList: React.FC<BookListProps> = ({ textSearch }) => {
           setError(error.message);
         });
     } else {
-      setCurrentPage(1);
-      findBooksByName(currentPage - 1, textSearch)
+      findBooks(currentPage - 1, textSearch, categoryId)
         .then((response) => {
           setBooks(response.booksData);
           setLoading(false);
@@ -44,8 +73,7 @@ const BookList: React.FC<BookListProps> = ({ textSearch }) => {
           setError(error.message);
         });
     }
-  }, [currentPage, textSearch]); // gọi lại khi trang thay đổi
-
+  }, [currentPage, textSearch, categoryId]);
 
   const onPageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -95,6 +123,13 @@ const BookList: React.FC<BookListProps> = ({ textSearch }) => {
 
   return (
     <div className="container">
+      <div className="row mt-4">
+        <div className="col-12">
+          <div className="alert alert-primary fw-bold" role="alert">
+            Total number of books: {totalBooks}
+          </div>
+        </div>
+      </div>
       <div className="row mt-4 mb-4">
         {books.map((book) => (
           <BookProps key={book.id} book={book} />
