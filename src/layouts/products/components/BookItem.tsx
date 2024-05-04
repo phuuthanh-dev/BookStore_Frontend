@@ -3,7 +3,6 @@ import { Book } from "../../../models/Book";
 import { getIconImageByBoodId } from "../../../api/ImageAPI";
 import { Image } from "../../../models/Image";
 import { Link } from "react-router-dom";
-import BookList from "../BookList";
 import { renderRating } from "../../utils/RatingStar";
 import { formatNumber } from "../../utils/FormatNumber";
 
@@ -58,7 +57,7 @@ const BookItem: React.FC<BookProps> = (props) => {
   }
 
   return (
-    <div className="col-md-3 mt-2">
+    <div className="col-md-3 mt-4">
       <div className="card">
         <Link to={`/view-detail/book/${props.book.id}`}>
           <img
@@ -91,11 +90,11 @@ const BookItem: React.FC<BookProps> = (props) => {
           <div className="price d-flex align-items-start flex-column mb-2">
             <span className="discounted-price">
               <strong style={{ color: "red" }}>
-                {formatNumber(props.book.price)} đ
+                {formatNumber(props.book.price)}<sup>đ</sup>
               </strong>
             </span>
             <span className="original-price">
-              <del>{formatNumber(props.book.originPrice)} đ</del>
+              <del>{formatNumber(props.book.originPrice)}<sup>đ</sup></del>
             </span>
           </div>
           <div className="row mt—2" role="group">

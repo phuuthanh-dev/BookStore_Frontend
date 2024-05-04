@@ -24,6 +24,38 @@ const BookDetail: React.FC = () => {
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const stockQuantity = book?.quantity ? book.quantity : 0;
+
+  const increaseQuantity = (value: number) => {
+    const newQuantity = value + quantity;
+    if (newQuantity <= stockQuantity) {
+      setQuantity(quantity + value);
+    }
+  };
+
+  const decreaseQuantity = (value: number) => {
+    if (quantity > 1) {
+      setQuantity(quantity - value);
+    }
+  };
+
+  const handleChangeQuantity = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newQuantity = parseInt(e.target.value);
+    if (
+      !Number.isNaN(newQuantity) &&
+      newQuantity <= stockQuantity &&
+      newQuantity >= 1
+    ) {
+      setQuantity(newQuantity);
+    } else if (newQuantity > stockQuantity) {
+      setQuantity(stockQuantity);
+    }
+  };
+
+  const handleBuyNow = () => {};
+
+  const handleAddToCart = () => {};
 
   useEffect(() => {
     getBook(bookId)
@@ -82,10 +114,10 @@ const BookDetail: React.FC = () => {
   return (
     <div className="container" style={{ textAlign: "left" }}>
       <div className="row mt-4 mb-4">
-        <div className="col-5">
+        <div className="col-4">
           <ImageProduct bookId={book.id} />
         </div>
-        <div className="col-7">
+        <div className="col-8">
           <div className="row">
             <div className="col-8">
               <h5>
@@ -94,7 +126,10 @@ const BookDetail: React.FC = () => {
               </h5>
               <h4>{book.title}</h4>
               <h6 style={{ color: "blue" }}>{book.author} (Author)</h6>
-              <h4 style={{ color: "red" }}>{formatNumber(book.price)} đ</h4>
+              <h4 style={{ color: "red" }}>
+                {formatNumber(book.price)}
+                <sup>đ</sup>
+              </h4>
               <hr />
               <div>
                 ISBN: <span style={{ color: "grey" }}>{book.isbn}</span>
@@ -109,16 +144,57 @@ const BookDetail: React.FC = () => {
               <hr />
             </div>
             <div className="col-4">
-              <div className="row">
-                <div className="col-6">
-                  <Link to="index.html" className="btn btn-secondary">
-                    Add to Cart
-                  </Link>
+              <div>
+                <div className="mb-2">Quantity</div>
+                <div className="d-flex align-items-center">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary me-2"
+                    onClick={() => decreaseQuantity(1)}
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    className="no-spinners form-control fw-bold text-center"
+                    value={quantity}
+                    min={1}
+                    max={book.quantity}
+                    onChange={handleChangeQuantity}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary ms-2"
+                    onClick={() => increaseQuantity(1)}
+                  >
+                    +
+                  </button>
                 </div>
-                <div className="col-6">
-                  <Link to="index.html" className="btn btn-primary">
+                {book.price && (
+                  <div className="mt-4">
+                    Subtotal:
+                    <br />
+                    <h4 className="mt-1">
+                      {formatNumber(book.price * quantity)}
+                      <sup>đ</sup>
+                    </h4>
+                  </div>
+                )}
+                <div className="d-grid gap-2">
+                  <button
+                    onClick={handleBuyNow}
+                    type="button"
+                    className="btn btn-danger mt-2"
+                  >
                     Buy Now
-                  </Link>
+                  </button>
+                  <button
+                    onClick={handleAddToCart}
+                    type="button"
+                    className="btn btn-outline-primary mt-2"
+                  >
+                    Add To Cart
+                  </button>
                 </div>
               </div>
             </div>

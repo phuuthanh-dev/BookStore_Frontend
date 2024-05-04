@@ -145,7 +145,7 @@ function Navbar({ textSearch, setTextSearch }: NavbarProps) {
 
           <ul className="navbar-nav me-1">
             <li className="nav-item">
-              <NavLink className="nav-link" to="/user">
+              <NavLink className="nav-link" to="/user/register">
                 <i className="fas fa-user"></i>
               </NavLink>
             </li>

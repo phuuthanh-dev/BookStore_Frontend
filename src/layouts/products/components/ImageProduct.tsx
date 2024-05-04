@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Book } from "../../../models/Book";
 import { getIconImageByBoodId, getImagesByBookId } from "../../../api/ImageAPI";
 import { Image } from "../../../models/Image";
-import { Link } from "react-router-dom";
-import BookList from "../BookList";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
@@ -61,10 +59,14 @@ const ImageProduct: React.FC<ImageProductProps> = (props) => {
   return (
     <div className="row">
       <div className="col-12">
-        <Carousel showArrows={true} showThumbs={true}>
+        <Carousel showArrows={true} showIndicators={true} showThumbs={true}>
           {images.map((image, index) => (
             <div key={index}>
-              <img src={image.data} alt={image.name} style={{maxWidth: "400px"}}/>
+              <img
+                src={image.data}
+                alt={image.name}
+                style={{ maxWidth: "400px" }}
+              />
             </div>
           ))}
         </Carousel>

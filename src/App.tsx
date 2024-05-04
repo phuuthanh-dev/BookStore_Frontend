@@ -7,6 +7,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import About from "./layouts/about/About";
 import NoPage from "./layouts/utils/NoPage";
 import BookDetail from "./layouts/products/BookDetail";
+import RegisterUser from "./layouts/users/RegisterUser";
 
 function App() {
   const [textSearch, setTextSearch] = useState("");
@@ -30,6 +31,7 @@ function App() {
           />
           <Route path="/about" element={<About />} />
           <Route path="/view-detail/book/:id" element={<BookDetail />} />
+          <Route path="/user/register" element={<RegisterUser />} />
           <Route path="/*" element={<NoPage />} />
         </Routes>
         <Footer />
