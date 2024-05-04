@@ -4,6 +4,7 @@ import { Category } from "../../models/Category";
 import { getCategories } from "../../api/CategoryAPI";
 import CategoryItem from "../products/components/CategoryItem";
 import { useNavigate } from 'react-router-dom';
+import { Search } from "react-bootstrap-icons";
 
 interface NavbarProps {
   textSearch: string;
@@ -131,7 +132,7 @@ function Navbar({ textSearch, setTextSearch }: NavbarProps) {
               onKeyPress={handleKeyPress}
             />
             <button className="btn btn-outline-success" type="submit">
-              Search
+              <Search/>
             </button>
           </div>
           <ul className="navbar-nav me-1">

@@ -4,6 +4,8 @@ import { getIconImageByBoodId } from "../../../api/ImageAPI";
 import { Image } from "../../../models/Image";
 import { Link } from "react-router-dom";
 import BookList from "../BookList";
+import { renderRating } from "../../utils/RatingStar";
+import { formatNumber } from "../../utils/FormatNumber";
 
 interface BookProps {
   book: Book;
@@ -70,7 +72,8 @@ const BookItem: React.FC<BookProps> = (props) => {
           <Link
             to={`/view-detail/book/${props.book.id}`}
             style={{
-              textDecoration: "none", color: "black"
+              textDecoration: "none",
+              color: "black",
             }}
           >
             <h6
@@ -79,27 +82,34 @@ const BookItem: React.FC<BookProps> = (props) => {
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
-                textAlign: 'start'
+                textAlign: "start",
               }}
             >
               {props.book.title}
             </h6>
           </Link>
-          <div className="price d-flex align-items-start flex-column">
-            <h6 className="discounted-price">
-              <strong style={{ color: "red" }}>{props.book.price} đ</strong>
-            </h6>
-            <div className="original-price">
-              <del>{props.book.originPrice} đ</del>
-            </div>
+          <div className="price d-flex align-items-start flex-column mb-2">
+            <span className="discounted-price">
+              <strong style={{ color: "red" }}>
+                {formatNumber(props.book.price)} đ
+              </strong>
+            </span>
+            <span className="original-price">
+              <del>{formatNumber(props.book.originPrice)} đ</del>
+            </span>
           </div>
           <div className="row mt—2" role="group">
-            <div className="col-6">
-              <a href="index.html" className="btn btn-secondary btn-block">
-                <i className="fas fa-heart"></i>
-              </a>
+            <div className="col-6" style={{ textAlign: "start" }}>
+              <span>
+                {renderRating(
+                  props.book.avgRatings ? props.book.avgRatings : 0
+                )}
+              </span>
             </div>
-            <div className="col-6">
+            <div className="col-6 text-end">
+              <Link to="/" className="btn btn-secondary btn-block me-2">
+                <i className="fas fa-heart"></i>
+              </Link>
               <button className="btn btn-danger btn-block">
                 <i className="fas fa-shopping-cart"></i>
               </button>

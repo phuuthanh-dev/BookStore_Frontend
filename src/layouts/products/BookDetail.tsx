@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { getBook } from "../../api/BookAPI";
 import { Book } from "../../models/Book";
 import ImageProduct from "./components/ImageProduct";
+import ReviewBook from "./components/ReviewBook";
+import { renderRating } from "../utils/RatingStar";
+import { formatNumber } from "../utils/FormatNumber";
 
 const BookDetail: React.FC = () => {
   const { id } = useParams();
@@ -86,11 +89,12 @@ const BookDetail: React.FC = () => {
           <div className="row">
             <div className="col-8">
               <h5>
-                {book.avgRatings} <span>(0 customer review)</span>
+                {renderRating(book.avgRatings ? book.avgRatings : 0)}{" "}
+                <span>(0 customer review)</span>
               </h5>
               <h4>{book.title}</h4>
               <h6 style={{ color: "blue" }}>{book.author} (Author)</h6>
-              <h4 style={{ color: "red" }}>{book.price} đ</h4>
+              <h4 style={{ color: "red" }}>{formatNumber(book.price)} đ</h4>
               <hr />
               <div>
                 ISBN: <span style={{ color: "grey" }}>{book.isbn}</span>
@@ -99,15 +103,31 @@ const BookDetail: React.FC = () => {
                 Quantity: <span style={{ color: "grey" }}>{book.quantity}</span>
               </div>
               <div>
-                Description: <span style={{ color: "grey" }}>{book.description}</span>
+                Description:{" "}
+                <span style={{ color: "grey" }}>{book.description}</span>
               </div>
               <hr />
             </div>
-            <div className="col-4">PHẦN ĐẶT HÀNG</div>
+            <div className="col-4">
+              <div className="row">
+                <div className="col-6">
+                  <Link to="index.html" className="btn btn-secondary">
+                    Add to Cart
+                  </Link>
+                </div>
+                <div className="col-6">
+                  <Link to="index.html" className="btn btn-primary">
+                    Buy Now
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div className="row mt-4 mb-4">Phần REVIEW</div>
+      <div className="row mt-4 mb-4">
+        <ReviewBook bookId={bookId} />
+      </div>
     </div>
   );
 };

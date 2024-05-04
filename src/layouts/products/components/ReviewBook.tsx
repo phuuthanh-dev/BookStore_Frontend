@@ -1,27 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Book } from "../../../models/Book";
-import { getIconImageByBoodId, getImagesByBookId } from "../../../api/ImageAPI";
-import { Image } from "../../../models/Image";
-import { Link } from "react-router-dom";
-import BookList from "../BookList";
-import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { getReviewsByBookId } from "../../../api/ReviewAPI";
+import { Review } from "../../../models/Review";
+import { renderRating } from "../../utils/RatingStar";
 
-interface ImageProductProps {
+interface ReviewBookProps {
   bookId: number;
 }
 
-const ImageProduct: React.FC<ImageProductProps> = (props) => {
+const ReviewBook: React.FC<ReviewBookProps> = (props) => {
   const bookId: number = props.bookId;
 
-  const [images, setImages] = useState<Image[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    getImagesByBookId(bookId)
-      .then((imagesData) => {
-        setImages(imagesData);
+    getReviewsByBookId(bookId)
+      .then((response) => {
+        setReviews(response.reviewData);
         setLoading(false);
       })
       .catch((error) => {
@@ -59,18 +56,21 @@ const ImageProduct: React.FC<ImageProductProps> = (props) => {
   }
 
   return (
-    <div className="row">
-      <div className="col-12">
-        <Carousel showArrows={true} showThumbs={true}>
-          {images.map((image, index) => (
-            <div key={index}>
-              <img src={image.data} alt={image.name} style={{maxWidth: "400px"}}/>
-            </div>
-          ))}
-        </Carousel>
-      </div>
+    <div className="container mt-2 mb-2 text-center">
+      <h4>Reviews Produucts: </h4>
+      {reviews.map((review, index) => (
+        <div className="row" key={index}>
+          <div className="col-4 text-end">
+            {/* <UserReview/> */}
+            <p>{renderRating(review.rating?review.rating:0)}</p>
+          </div>
+          <div className="col-8 text-start">
+            <p>{review.comment}</p>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
 
-export default ImageProduct;
+export default ReviewBook;
