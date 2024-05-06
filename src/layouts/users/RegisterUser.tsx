@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import {
     MDBBtn,
@@ -13,8 +13,9 @@ import {
     MDBIcon,
     MDBCheckbox,
 } from "mdb-react-ui-kit";
-import { checkExist } from "../../api/UserAPI";
+import { checkExist, register } from "../../api/UserAPI";
 import { Link } from "react-router-dom";
+import debounce from "debounce";
 
 function RegisterUser() {
     const [username, setUsername] = useState("");
@@ -24,20 +25,50 @@ function RegisterUser() {
     const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
     const [cfPassword, setCfPassword] = useState("");
-    const [gender, setGender] = useState(1);
+    const [gender, setGender] = useState('M');
 
     // error messages
     const [errorUsername, setErrorUsername] = useState("");
     const [errorEmail, setErrorEmail] = useState("");
     const [errorPassword, setErrorPassword] = useState("");
     const [errorConfirmPassword, setErrorConfirmPassword] = useState("");
+    const [notification, setNotification] = useState("");
 
-    const handleSubmit = async (e: React.FormEvent) => { };
+    const handleSubmit = async (e: React.FormEvent) => {
+        // Clear error message
+        setErrorUsername("");
+        setErrorEmail("");
+        setErrorPassword("");
+        setErrorConfirmPassword("");
+
+        // Tránh click liên tục
+        e.preventDefault();
+
+        // Check again
+        const isUsernameValid = !await checkExist(username, "")
+        const isEmailValid = !await checkExist("", email)
+        const isPasswordValid = !checkPassword(password)
+        const isCofirmPasswordValid = !checkConfirmPassword(cfPassword)
+
+        if (!isUsernameValid || !isEmailValid || !isPasswordValid || !isCofirmPasswordValid) {
+            return;
+        }
+
+        const isSuccess = await register(username, firstName, lastName, phone, email, password, gender)
+
+        console.log(isSuccess);
+        if (!isSuccess) {
+            setNotification("An error occurred during account registration!")
+            return;
+        }
+        setNotification("Registration successful, please check your activation email!")
+    };
 
     const handleUsernameChange = async (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
         // change username value
+        console.log(e.target.value)
         setUsername(e.target.value);
 
         // check exist
@@ -61,30 +92,55 @@ function RegisterUser() {
         }
     };
 
-    const checkPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Debounce
+    const debouncedUsernameOnChange = debounce(handleUsernameChange, 500);
+    const debouncedEmailOnChange = debounce(handleEmailChange, 500);
+    
+    // Check Password
+    const checkPassword = (password: string) => {
         const passwordRegex = /^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
-        setPassword(e.target.value);
-        if (!passwordRegex.test(e.target.value)) {
+        if (!passwordRegex.test(password)) {
             setErrorPassword(
                 "Password must contain at least 8 characters and 1 special character!"
             );
+            return true;
         } else {
             // Nhập passCf đúng nhưng ch match sau đó nhập pass đúng
-            if (e.target.value === cfPassword) {
+            if (password === cfPassword) {
                 setErrorConfirmPassword("");
             }
             setErrorPassword("");
+            return false;
         }
     };
 
-    const checkConfirmPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setCfPassword(e.target.value);
-        if (password !== e.target.value) {
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPassword(e.target.value);
+
+        setErrorPassword("");
+
+        return checkPassword(e.target.value);
+    }
+
+
+    // Check Confirm Password
+    const checkConfirmPassword = (confirmPassword: string) => {
+        if (password !== confirmPassword) {
             setErrorConfirmPassword("Passwords do not match!");
+            return true;
         } else {
             setErrorConfirmPassword("");
+            return false;
         }
     };
+
+    const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCfPassword(e.target.value);
+
+        setErrorConfirmPassword("");
+
+        return checkConfirmPassword(e.target.value);
+    }
 
 
     return (
@@ -108,6 +164,7 @@ function RegisterUser() {
                                         id="form1"
                                         type="text"
                                         className="w-100"
+                                        value={username}
                                         onChange={handleUsernameChange}
                                         required
                                     />
@@ -127,11 +184,13 @@ function RegisterUser() {
                                 <div className="d-flex flex-row align-items-center mb-4 ">
                                     <MDBIcon fas icon="user-edit me-3 fa-fw" size="lg" />
                                     <div className="me-3">
-                                        <MDBInput label="First Name" id="form1" type="text"
+                                        <MDBInput label="First Name" id="form2" type="text"
+                                            value={firstName} onChange={(e) => setFirstName(e.target.value)}
                                             required />
                                     </div>
                                     <div>
-                                        <MDBInput label="Last Name" id="form1" type="text"
+                                        <MDBInput label="Last Name" id="form3" type="text"
+                                            value={lastName} onChange={(e) => setLastName(e.target.value)}
                                             required />
                                     </div>
                                 </div>
@@ -144,21 +203,23 @@ function RegisterUser() {
                                     <MDBRadio
                                         name="inlineRadio"
                                         id="inlineRadio1"
-                                        value="option1"
+                                        value="M"
                                         label="Male"
+                                        onChange={(e) => setGender(e.target.value)}
+                                        checked={gender === "M" ? true : false}
                                         inline
                                     />
                                     <MDBRadio
                                         name="inlineRadio"
                                         id="inlineRadio2"
-                                        value="option2"
+                                        value="F"
                                         label="Female"
                                         inline
                                     />
                                     <MDBRadio
                                         name="inlineRadio"
                                         id="inlineRadio3"
-                                        value="option3"
+                                        value="O"
                                         label="Other"
                                         inline
                                     />
@@ -168,8 +229,9 @@ function RegisterUser() {
                                     <MDBIcon fas icon="envelope me-3 fa-fw" size="lg" />
                                     <MDBInput
                                         label="Your Email"
-                                        id="form2"
+                                        id="form4"
                                         type="email"
+                                        value={email}
                                         onChange={handleEmailChange}
                                         required
                                     />
@@ -190,17 +252,19 @@ function RegisterUser() {
                                     <MDBIcon fas icon="phone me-3 fa-fw" size="lg" />
                                     <MDBInput
                                         label="Phone Number"
-                                        id="form1"
+                                        id="form5"
                                         type="text"
                                         className="w-100"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
                                         required
                                     />
                                 </div>
 
                                 <div className="d-flex flex-row align-items-center">
                                     <MDBIcon fas icon="lock me-3 fa-fw" size="lg" />
-                                    <MDBInput label="Password" id="form3" type="password"
-                                        required onChange={checkPassword} />
+                                    <MDBInput label="Password" id="form6" type="password"
+                                        required onChange={handlePasswordChange} />
                                 </div>
                                 <div
                                     className="mb-4 mt-1 fw-bold"
@@ -218,9 +282,9 @@ function RegisterUser() {
                                     <MDBIcon fas icon="key me-3 fa-fw" size="lg" />
                                     <MDBInput
                                         label="Repeat your password"
-                                        id="form4"
+                                        id="form7"
                                         type="password"
-                                        onChange={checkConfirmPassword}
+                                        onChange={handleConfirmPasswordChange}
                                         required
                                     />
                                 </div>
@@ -242,12 +306,24 @@ function RegisterUser() {
                                         value=""
                                         id="flexCheckDefault"
                                         label="I agree all statements in"
-                                    /> <Link style={{marginLeft: "4px"}} to="">Terms of service</Link>
+                                    /> <Link style={{ marginLeft: "4px" }} to="">Terms of service</Link>
                                 </div>
 
                                 <MDBBtn className="mb-4" size="lg">
                                     Register
                                 </MDBBtn>
+
+                                <div
+                                    className="mb-4 mt-1 fw-bold"
+                                    style={{
+                                        color: "green",
+                                        textAlign: "start",
+                                        fontSize: "14px",
+                                        marginLeft: "45px",
+                                    }}
+                                >
+                                    {notification}
+                                </div>
                             </form>
                         </MDBCol>
 
