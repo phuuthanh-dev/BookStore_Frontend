@@ -8,6 +8,9 @@ import About from "./layouts/about/About";
 import NoPage from "./layouts/utils/NoPage";
 import BookDetail from "./layouts/products/BookDetail";
 import RegisterUser from "./layouts/users/RegisterUser";
+import ActiveUser from "./layouts/users/ActiveUser";
+import LoginUser from "./layouts/users/LoginUser";
+import { Test } from "./layouts/users/Test";
 
 function App() {
   const [textSearch, setTextSearch] = useState("");
@@ -32,6 +35,9 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/view-detail/book/:id" element={<BookDetail />} />
           <Route path="/user/register" element={<RegisterUser />} />
+          <Route path="/user/login" element={<LoginUser />} />
+          <Route path="/test" element={<Test />} />
+          <Route path="/user/active/:email/:activationKey" element={<ActiveUser />} />
           <Route path="/*" element={<NoPage />} />
         </Routes>
         <Footer />

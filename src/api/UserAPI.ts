@@ -23,7 +23,7 @@ export const checkExist = async (username: string, email: string) => {
 
 export const register = async (username: string, firstName: string, lastName: string, phone: string, email: string, password: string, gender: string): Promise<boolean> => {
     // end-point
-    let URL = `http://localhost:8080/api/user/register`;
+    let URL = `http://localhost:8080/api/auth/register`;
 
     // call api
     try {
@@ -53,3 +53,25 @@ export const register = async (username: string, firstName: string, lastName: st
         return false;
     }
 };
+
+export const handleActiveUser = async (email: string, activationKey: string) : Promise<boolean> => {
+    try {
+        const URL: string = `http://localhost:8080/api/user/active?email=${email}&activationKey=${activationKey}`;
+        const response = await fetch(URL,
+            {
+                method: 'GET',
+            }
+        )
+        
+        console.log(response);
+        if (response.ok) {
+            return true;
+        } else {
+            throw new Error(`Không thể truy cập ${URL}`);
+        }
+
+    } catch (error) {
+        console.error("Error: " + error);
+        return false;
+    }
+}
