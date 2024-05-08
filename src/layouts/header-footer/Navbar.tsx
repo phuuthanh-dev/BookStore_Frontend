@@ -5,16 +5,26 @@ import { getCategories } from "../../api/CategoryAPI";
 import CategoryItem from "../products/components/CategoryItem";
 import { useNavigate } from 'react-router-dom';
 import { Search } from "react-bootstrap-icons";
+import { jwtDecode } from "jwt-decode";
 
 interface NavbarProps {
   textSearch: string;
   setTextSearch: (text: string) => void;
 }
 
+interface JwtPayload {
+  isAdmin: boolean;
+  isStaff: boolean;
+  isUser: boolean;
+  username: string;
+}
+
+
 function Navbar({ textSearch, setTextSearch }: NavbarProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userLogin, setUserLogin] = useState("");
 
   const searchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTextSearch(e.target.value);
@@ -28,6 +38,26 @@ function Navbar({ textSearch, setTextSearch }: NavbarProps) {
       navigate("/");
     }
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/user/login";
+    setUserLogin("")
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return;
+    } else {
+      // giải mã token
+      const decodeToken = jwtDecode(token) as JwtPayload;
+      console.log(decodeToken);
+
+      // lấy thông tin cụ thể
+      setUserLogin(decodeToken.username);
+    }
+  }, []);
 
   useEffect(() => {
     getCategories()
@@ -105,7 +135,7 @@ function Navbar({ textSearch, setTextSearch }: NavbarProps) {
               </NavLink>
               <ul className="dropdown-menu">
                 {categories.map((category) => (
-                  <CategoryItem category={category} key={category.id}/>
+                  <CategoryItem category={category} key={category.id} />
                 ))}
               </ul>
             </li>
@@ -132,7 +162,7 @@ function Navbar({ textSearch, setTextSearch }: NavbarProps) {
               onKeyPress={handleKeyPress}
             />
             <button className="btn btn-outline-success" type="submit">
-              <Search/>
+              <Search />
             </button>
           </div>
           <ul className="navbar-nav me-1">
@@ -142,14 +172,27 @@ function Navbar({ textSearch, setTextSearch }: NavbarProps) {
               </NavLink>
             </li>
           </ul>
-
-          <ul className="navbar-nav me-1">
-            <li className="nav-item">
-              <NavLink className="nav-link" to="/user/register">
-                <i className="fas fa-user"></i>
-              </NavLink>
-            </li>
-          </ul>
+          {
+            !userLogin ?
+              <ul className="navbar-nav me-1">
+                <li className="nav-item">
+                  <NavLink className="nav-link" to="/user/login">
+                    <i className="fas fa-user"></i>
+                  </NavLink>
+                </li>
+              </ul> : ""}
+          {
+            userLogin ?
+              <ul className="navbar-nav me-1 text-light">Hello, {userLogin}</ul> : ""}
+          {
+            userLogin ?
+              <ul className="navbar-nav me-1">
+                <li className="nav-item">
+                  <button className="nav-link" onClick={handleLogout}>
+                    Logout
+                  </button>
+                </li>
+              </ul> : ""}
         </div>
       </div>
     </nav>
