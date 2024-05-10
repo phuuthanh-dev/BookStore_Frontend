@@ -21,7 +21,8 @@ export const checkExist = async (username: string, email: string) => {
     }
 };
 
-export const register = async (username: string, firstName: string, lastName: string, phone: string, email: string, password: string, gender: string): Promise<boolean> => {
+export const register = async (username: string, firstName: string, lastName: string, phone: 
+    string, email: string, password: string, gender: string, base64Avatar: string | null): Promise<boolean> => {
     // end-point
     let URL = `http://localhost:8080/api/auth/register`;
 
@@ -40,6 +41,7 @@ export const register = async (username: string, firstName: string, lastName: st
                 email: email,
                 password: password,
                 gender: gender,
+                avatar: base64Avatar
             }),
         });
 

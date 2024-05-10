@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Book } from "../../models/Book";
-import BookProps from "./components/BookItem";
+import BookItem from "./components/BookItem";
 import { findBooks, getBooks } from "../../api/BookAPI";
 import { Pagination } from "../utils/Pagination";
 import { text } from "stream/consumers";
@@ -132,7 +132,7 @@ const BookList: React.FC<BookListProps> = ({ textSearch, categoryId }) => {
       </div>
       <div className="row mt-4 mb-4">
         {books.map((book) => (
-          <BookProps key={book.id} book={book} />
+          <BookItem key={book.id} book={book} />
         ))}
       </div>
       <div className="d-flex justify-content-center">

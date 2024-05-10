@@ -12,6 +12,7 @@ import {
     MDBRadio,
     MDBIcon,
     MDBCheckbox,
+    MDBFile,
 } from "mdb-react-ui-kit";
 import { checkExist, register } from "../../api/UserAPI";
 import { Link } from "react-router-dom";
@@ -26,6 +27,7 @@ function RegisterUser() {
     const [password, setPassword] = useState("");
     const [cfPassword, setCfPassword] = useState("");
     const [gender, setGender] = useState('M');
+    const [avatar, setAvatar] = useState<File | null>(null);
 
     // error messages
     const [errorUsername, setErrorUsername] = useState("");
@@ -54,7 +56,9 @@ function RegisterUser() {
             return;
         }
 
-        const isSuccess = await register(username, firstName, lastName, phone, email, password, gender)
+        const base64Avatar = avatar ? await getBase64(avatar) : null;
+
+        const isSuccess = await register(username, firstName, lastName, phone, email, password, gender, base64Avatar);
 
         console.log(isSuccess);
         if (!isSuccess) {
@@ -92,10 +96,6 @@ function RegisterUser() {
         }
     };
 
-    // Debounce
-    const debouncedUsernameOnChange = debounce(handleUsernameChange, 500);
-    const debouncedEmailOnChange = debounce(handleEmailChange, 500);
-    
     // Check Password
     const checkPassword = (password: string) => {
         const passwordRegex = /^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
@@ -142,6 +142,22 @@ function RegisterUser() {
         return checkConfirmPassword(e.target.value);
     }
 
+    // Xử lí thay đổi File
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const file = e.target.files[0];
+            setAvatar(file);
+        }
+    };
+
+    const getBase64 = (file: File): Promise<string | null> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result ? (reader.result as string) : null);
+            reader.onerror = (error) => reject(error);
+        });
+    }
 
     return (
         <MDBContainer fluid>
@@ -298,6 +314,13 @@ function RegisterUser() {
                                     }}
                                 >
                                     {errorConfirmPassword}
+                                </div>
+
+                                <div className="d-flex flex-row align-items-center">
+                                    <MDBIcon fas icon="key me-3 fa-fw" size="lg" />
+                                    <MDBFile
+                                        id='customFile' accept="image/*" onChange={handleAvatarChange}
+                                    />
                                 </div>
 
                                 <div className="mb-4 d-flex justify-content-center">

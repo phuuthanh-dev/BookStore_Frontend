@@ -12,12 +12,15 @@ const BookForm: React.FC = () => {
         isbn: "",
         author: "",
         avgRatings: 0,
+        images: [{}]
     })
+
+    const [images, setImages] = useState<File | null>(null);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const token = localStorage.getItem("token");
-        fetch("http://localhost:8080/books", {
+        fetch("http://localhost:8080/api/book", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -37,12 +40,46 @@ const BookForm: React.FC = () => {
                     isbn: "",
                     author: "",
                     avgRatings: 0,
+                    images: []
                 })
             } else {
                 alert("Add book not successfully!")
                 console.log(response)
             }
         })
+    }
+
+    const getBase64 = (file: File): Promise<string | null> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result ? (reader.result as string) : null);
+            reader.onerror = (error) => reject(error);
+        });
+    }
+
+    const onImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const file = e.target.files[0];
+            setImages(file);
+            if (file) {
+                const base64Image = await getBase64(file);
+                console.log(base64Image)
+                if (base64Image !== null) {
+                    const image = {
+                        id: 0,
+                        data: base64Image,
+                        icon: true
+                    }
+                    setBook({
+                        ...book,
+                        images: [image]
+                    });
+                }
+            } else {
+                setBook({ ...book, images: [{ data: "", id: 0 }] });
+            }
+        }
     }
 
     return (
@@ -67,6 +104,8 @@ const BookForm: React.FC = () => {
                     <input className="form-control mb-4" required type="text" id="isbn" value={book.isbn} onChange={(e) => setBook({ ...book, isbn: e.target.value })} />
                     <label htmlFor="avgRatings" >Avarage stars</label>
                     <input className="form-control mb-4" required type="number" id="avgRatings" value={book.avgRatings} onChange={(e) => setBook({ ...book, avgRatings: parseFloat(e.target.value) })} />
+                    <label htmlFor="images" >Images</label>
+                    <input className="form-control mb-4" required type="file" accept="image/*" id="images" onChange={onImageChange} />
                     <button type="submit" className="btn btn-success">Save</button>
                 </form>
             </div>

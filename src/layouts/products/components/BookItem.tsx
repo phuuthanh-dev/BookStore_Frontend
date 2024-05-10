@@ -27,7 +27,6 @@ const BookItem: React.FC<BookProps> = (props) => {
         setError(error.message);
       });
   }, []); // chi goi 1 lan
-
   if (loading) {
     return (
       <div className="container">
