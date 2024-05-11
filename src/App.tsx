@@ -12,6 +12,7 @@ import ActiveUser from "./layouts/users/ActiveUser";
 import LoginUser from "./layouts/users/LoginUser";
 import { Test } from "./layouts/users/Test";
 import BookForm_Admin from "./layouts/admin/BookForm";
+import VNPAY_PAY from "./layouts/vnpay/VNPAY_PAY";
 
 function App() {
   const [textSearch, setTextSearch] = useState("");
@@ -38,6 +39,7 @@ function App() {
           <Route path="/user/register" element={<RegisterUser />} />
           <Route path="/user/login" element={<LoginUser />} />
           <Route path="/test" element={<Test />} />
+          <Route path="/cart" element={<VNPAY_PAY />} />
           <Route path="/admin/create-book" element={<BookForm_Admin />} />
           <Route path="/user/active/:email/:activationKey" element={<ActiveUser />} />
           <Route path="/*" element={<NoPage />} />
