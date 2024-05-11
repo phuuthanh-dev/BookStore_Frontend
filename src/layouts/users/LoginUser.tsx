@@ -11,6 +11,7 @@ import {
     MDBInput,
     MDBIcon,
 } from "mdb-react-ui-kit";
+import { Link } from "react-router-dom";
 
 function LoginUser() {
     const [username, setUsername] = useState("");
@@ -105,6 +106,10 @@ function LoginUser() {
                                 <MDBBtn onClick={handleLogin} type="button" className="mb-4" size="lg">
                                     Login
                                 </MDBBtn>
+                                <div className="mb-4 d-flex justify-content-center">
+                                    Don't have an account? <Link className="mb-4 ms-1" to="/user/register">Register</Link>
+                                </div>
+
                             </div>
                         </MDBCol>
 

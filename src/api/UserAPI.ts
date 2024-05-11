@@ -46,6 +46,7 @@ export const register = async (username: string, firstName: string, lastName: st
         });
 
         console.log(response);
+        
         if (!response.ok) {
             throw new Error(`Không thể truy cập ${URL}`);
         }
@@ -58,7 +59,7 @@ export const register = async (username: string, firstName: string, lastName: st
 
 export const handleActiveUser = async (email: string, activationKey: string) : Promise<boolean> => {
     try {
-        const URL: string = `http://localhost:8080/api/user/active?email=${email}&activationKey=${activationKey}`;
+        const URL: string = `http://localhost:8080/api/auth/active?email=${email}&activationKey=${activationKey}`;
         const response = await fetch(URL,
             {
                 method: 'GET',

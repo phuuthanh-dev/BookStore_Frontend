@@ -4,7 +4,7 @@ import RequireAdmin from "./RequireAdmin";
 const BookForm: React.FC = () => {
     const [book, setBook] = useState({
         id: 0,
-        title: "",
+        name: "",
         description: "",
         originPrice: 0,
         price: 0,
@@ -12,7 +12,8 @@ const BookForm: React.FC = () => {
         isbn: "",
         author: "",
         avgRatings: 0,
-        images: [{}]
+        dataImage: "",
+        icon: true,
     })
 
     const [images, setImages] = useState<File | null>(null);
@@ -32,7 +33,7 @@ const BookForm: React.FC = () => {
                 alert("Add book successfully!")
                 setBook({
                     id: 0,
-                    title: "",
+                    name: "",
                     description: "",
                     originPrice: 0,
                     price: 0,
@@ -40,7 +41,8 @@ const BookForm: React.FC = () => {
                     isbn: "",
                     author: "",
                     avgRatings: 0,
-                    images: []
+                    dataImage: "",
+                    icon: true,
                 })
             } else {
                 alert("Add book not successfully!")
@@ -64,20 +66,12 @@ const BookForm: React.FC = () => {
             setImages(file);
             if (file) {
                 const base64Image = await getBase64(file);
-                console.log(base64Image)
-                if (base64Image !== null) {
-                    const image = {
-                        id: 0,
-                        data: base64Image,
-                        icon: true
-                    }
-                    setBook({
-                        ...book,
-                        images: [image]
-                    });
-                }
+                setBook({
+                    ...book,
+                    dataImage: base64Image || ""
+                });
             } else {
-                setBook({ ...book, images: [{ data: "", id: 0 }] });
+                setBook({ ...book, dataImage: "" });
             }
         }
     }
@@ -89,7 +83,7 @@ const BookForm: React.FC = () => {
                 <form onSubmit={handleSubmit} className="form">
                     <input type="hidden" id="id" value={book.id} />
                     <label htmlFor="title" >Book name</label>
-                    <input className="form-control mb-4" required type="text" id="title" value={book.title} onChange={(e) => setBook({ ...book, title: e.target.value })} />
+                    <input className="form-control mb-4" required type="text" id="title" value={book.name} onChange={(e) => setBook({ ...book, name: e.target.value })} />
                     <label htmlFor="description" >Book description</label>
                     <input className="form-control mb-4" required type="text" id="description" value={book.description} onChange={(e) => setBook({ ...book, description: e.target.value })} />
                     <label htmlFor="price" >Price</label>

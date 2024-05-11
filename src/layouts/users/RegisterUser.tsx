@@ -331,7 +331,9 @@ function RegisterUser() {
                                         label="I agree all statements in"
                                     /> <Link style={{ marginLeft: "4px" }} to="">Terms of service</Link>
                                 </div>
-
+                                <div className="mb-4 d-flex justify-content-center">
+                                    Have an account? <Link className="mb-4 ms-1" to="/user/login">Login</Link>
+                                </div>
                                 <MDBBtn className="mb-4" size="lg">
                                     Register
                                 </MDBBtn>

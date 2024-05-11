@@ -18,7 +18,7 @@ function ActiveUser() {
 
     const fetchData = async () => {
         try {
-            const URL: string = `http://localhost:8080/api/user/active?email=${email}&activationKey=${activationKey}`;
+            const URL: string = `http://localhost:8080/api/auth/active?email=${email}&activationKey=${activationKey}`;
             const response = await fetch(URL, { method: 'GET' });
             console.log(isActive)
             if (response.ok) {
